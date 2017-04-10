@@ -13,7 +13,7 @@ public class Main {
      */
     public static void main(String[] args)throws FileNotFoundException{
         BSTree tree = new BSTree();
-        PrintWriter error = new PrintWriter("error.log");
+        PrintWriter error = new PrintWriter("error.txt");
         try {
             String line, title;
             Scanner fileS = new Scanner(new File("inventory.dat"));
@@ -32,51 +32,64 @@ public class Main {
         Scanner t = new Scanner(new File("transaction.log"));
         while(t.hasNext()){
             String line = t.nextLine();
+            System.out.println("\n");
+            tree.print(tree.getRoot());
                 switch(line.substring(0, 3))
                 {
                 case "add":
                         if(Pattern.compile("[A-Za-z]+\\s+\\\"+[A-za-z0-9\\s\\:\\,\\;\\'\\\\\\.\\?\\!\\(\\)\\{\\}\\[\\]]+\\\"+\\,+[0-9]").matcher(line).find()){
-                            line = line.substring(0,5);
+                            line = line.substring(5);
                             String title = line.substring(0, line.indexOf('\"'));
                             line = line.substring(line.indexOf("\"")+2);
                             tree.addNode(new node(title, Integer.parseInt(line), 0,null,null));
                         }
-                        else
-                            error.println(line);
+                        else{
+                            error.print(line);
+                            error.println();
+                        }
                         break;
                 case "rem":
                         if(Pattern.compile("[A-Za-z]+\\s+\\\"+[A-za-z0-9\\s\\:\\,\\;\\'\\\\\\.\\?\\!\\(\\)\\{\\}\\[\\]]+\\\"+\\,+[0-9]").matcher(line).find()){
-                            line = line.substring(0,8);
+                            line = line.substring(8);
                             String title = line.substring(0, line.indexOf('\"'));
                             line = line.substring(line.indexOf("\"")+2);
                             tree.addNode(new node(title, Integer.parseInt(line)*-1, 0,null,null));
                         }
-                        else
-                            error.println(line);
+                        else{
+                            error.print(line);
+                            error.println();
+                        }
                         break;
                 case "ren":
                         if(Pattern.compile("[A-Za-z]+\\s+\\\"+[A-za-z0-9\\s\\:\\,\\;\\'\\\\\\.\\?\\!\\(\\)\\{\\}\\[\\]]+\\\"").matcher(line).find()){
-                            line = line.substring(0,6);
-                            tree.addNode(new node(line.substring(0, line.indexOf('\"')), -1, -1,null,null));
+                            line = line.substring(6);
+                            tree.addNode(new node(line.substring(0, line.indexOf('\"')), -1, +1,null,null));
                         }
-                        else
-                            error.println(line);
+                        else{
+                            error.print(line);
+                            error.println();
+                        }
                         break;
                 case "ret":
                         if(Pattern.compile("[A-Za-z]+\\s+\\\"+[A-za-z0-9\\s\\:\\,\\;\\'\\\\\\.\\?\\!\\(\\)\\{\\}\\[\\]]+\\\"").matcher(line).find()){
-                            line = line.substring(0,8);
+                            line = line.substring(8);
                             tree.addNode(new node(line.substring(0, line.indexOf('\"')), +1, -1,null,null));
                         }
-                        else
-                            error.println(line);
+                        else{
+                            error.print(line);
+                            error.println();
+                        }
                         break;
                 default:
                         System.out.println("error line");
-                        error.println(line);
+                        error.print(line);
+                        error.println();
 
             }
         }
+        error.close();
         PrintWriter out = new PrintWriter("redbox_kiosk.txt");
         tree.print(tree.getRoot(), out);
+        out.close();
     }
 }

@@ -11,15 +11,15 @@ public class BSTree {
     public node getRoot(){return root;}
     public void setRoot(node root){this.root = root;}
 
-    public void print(node n, PrintWriter out) {
+    public void print(node n, PrintWriter out) {//recursive print function
         if(n !=  null) {
-            print(n.getLeft(), out);
-            print(n.getRight(), out);
-            out.printf("%25s%5d%5d",n.getTitle(), n.getAvailable(),  n.getCopies());
-            out.println();
+            print(n.getLeft(), out);//go down the left
+            print(n.getRight(), out);//go down the right
+            out.printf("%25s%5d%5d",n.getTitle(), n.getAvailable(),  n.getCopies());//print it with the correct formatting
+            out.println();//go to next line
         }
     }
-    public void print(node n) {
+    public void print(node n) {//recursive print function to console
         if(n !=  null) {
             print(n.getLeft());
             print(n.getRight());
@@ -28,29 +28,30 @@ public class BSTree {
         }
     }
 
-    public void addNode(node n) { 
+    public void addNode(node n) { //addNode recursive helper function
         root = addNode(root, n, null); 
     } 
-    private node addNode(node root, node n, node parent) { 
-        if (root == null)
+    private node addNode(node root, node n, node parent){ //add node function for adding new nodes and modifying current ones
+        System.out.println("\n\n" + n.getTitle() + "    " + n.getAvailable() + "\n");
+        if (root == null)//if null, return the node as the new root
             return n; 
-        else if (n.getTitle().compareTo(root.getTitle()) > 0)
+        else if (n.getTitle().compareTo(root.getTitle()) > 0)//else if title is greater in the alphabet, go to the right
             root.setRight(addNode(root.getRight(), n, root)); 
-        else if (n.getTitle().compareTo(root.getTitle()) < 0)
+        else if (n.getTitle().compareTo(root.getTitle()) < 0)//else if the title is lesser in the alphabet, go to the left
             root.setLeft(addNode(root.getLeft(), n, root)); 
-        else if (n.getTitle().compareTo(root.getTitle()) == 0){
-            if (root.getAvailable() == 0 && root.getCopies() == 0 && n.getAvailable() < 0 && n.getCopies() == 0){
-                        remove(root, parent);
+        else if (n.getTitle().compareTo(root.getTitle()) == 0){//else if it is the same as a current node
+            if (root.getAvailable()+n.getAvailable() == 0 && root.getCopies() == 0 && n.getAvailable() < 0 && n.getCopies() == 0){//if removing is needed
+                        parent = remove(root, parent);
                         return parent;
             }
-            else{
+            else{//else, alter the values inside with the requested numbers
                 root.setAvailable(root.getAvailable() + n.getAvailable());
                 root.setCopies(root.getCopies() + n.getCopies());
             }
         }
         return root; 
     }
-    public boolean find(node n, String title, node parent){ 
+    public boolean find(node n, String title, node parent){ //find a node recursively to remove
         if(n == null) 
             return false;
         if(n.getTitle().equals(title)){
@@ -59,28 +60,24 @@ public class BSTree {
         }
         return find(n.getLeft(), title, n) || find(n.getRight(), title, n); 
     }
-    public void remove(node n, node parent){
+    public node remove(node n, node parent){//remove node function
 
-        if (n == null)
-            return;
-
-        boolean isLeft = (n == parent.getLeft() );
-
-        if (n == root) //if its the root node
+        if(n == root) //if its the root node
         {
             //get last house on the left on the right!
             //it becomes the new root
-            n = getLastHouseOnTheLeft( parent.getRight() );
-            if (n != null)
+            parent = n;
+            n = getLastHouseOnTheLeft(n);
+            if(n != null)
             {
                 n.setLeft( parent.getLeft() );
                 n.setRight( parent.getRight() );
-                root = n;
+                return n;
             }
         }
-        else if (n.getLeft() == null && n.getRight() == null)
+        else if(n.getLeft() == null && n.getRight() == null)
         {
-            if (isLeft)
+            if(n == parent.getLeft() )
             {
                 parent.setLeft(null);
             }
@@ -91,7 +88,7 @@ public class BSTree {
         }
         else if (n.getLeft() != null && n.getRight() != null) //two children, some shuffling
         {
-            if (isLeft)
+            if(n == parent.getLeft() )
             {
                 parent.setLeft( n.getRight() );
                 parent.getLeft().setLeft( n.getLeft() );
@@ -106,7 +103,7 @@ public class BSTree {
         {
             if (n.getLeft() == null)
             {
-                if (isLeft)
+                if(n == parent.getLeft() )
                 {
                     parent.setLeft( n.getLeft() );
                 }
@@ -117,7 +114,7 @@ public class BSTree {
             }
             else
             {
-                if (isLeft)
+                if(n == parent.getLeft() )
                 {
                     parent.setLeft( n.getRight() );
                 }
@@ -127,6 +124,7 @@ public class BSTree {
                 }
             }
         }
+        return this.root;
     }
     private node getLastHouseOnTheLeft(node start)
     {
